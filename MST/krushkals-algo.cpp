@@ -29,8 +29,13 @@ int main() {
         return 1;
     }
 
+    // Build adjacency list and edge list.
     vector<Edge> edges;
     edges.reserve(E);
+    vector<vector<pair<int,int>>> adj(V); // adjacency list: adj[u] = vector of {v, w}
+
+    bool read_ok = true;
+    int maxVertex = -1;
     for (int i = 0; i < E; ++i) {
         int u, v, w;
         if (!(cin >> u >> v >> w)) {
@@ -38,16 +43,27 @@ int main() {
             return 1;
         }
         edges.push_back({u, v, w});
+        maxVertex = max(maxVertex, max(u, v));
     }
 
-    // If user provided 1-based vertices (max vertex >= V), convert to 0-based
-    bool one_based = false;
-    for (auto &e : edges) if (e.u >= V || e.v >= V) { one_based = true; break; }
-    if (one_based) {
-        for (auto &e : edges) { e.u -= 1; e.v -= 1; }
+    // Detect if input is 1-based (e.g., vertices numbered 1..V) and convert to 0-based.
+    bool one_based = (maxVertex >= V);
+
+    // Fill adjacency list and normalize indices if needed.
+    for (auto &e : edges) {
+        int u = e.u;
+        int v = e.v;
+        int w = e.w;
+        if (one_based) { u -= 1; v -= 1; }
+        // ignore invalid entries after conversion
+        if (u < 0 || u >= V || v < 0 || v >= V) continue;
+        adj[u].push_back({v, w});
+        adj[v].push_back({u, w});
+        // store normalized values back for Kruskal
+        e.u = u; e.v = v;
     }
 
-    // sort edges by weight (ascending)
+    // sort edges by weight (ascending) for Kruskal
     sort(edges.begin(), edges.end(), [](const Edge &a, const Edge &b){
         return a.w < b.w;
     });
@@ -58,6 +74,18 @@ int main() {
 
     long long mst_wt = 0;
     int edges_used = 0;
+
+    // Optional: you can print adjacency list for debugging or confirmation
+    // Uncomment the following block if you want to see adj lists on output.
+    /*
+    cout << "Adjacency list:\n";
+    for (int i = 0; i < V; ++i) {
+        cout << i << ": ";
+        for (auto &p : adj[i]) cout << "(" << p.first << "," << p.second << ") ";
+        cout << '\n';
+    }
+    cout << '\n';
+    */
 
     cout << "Edges of MST are\n";
     for (const auto &e : edges) {
