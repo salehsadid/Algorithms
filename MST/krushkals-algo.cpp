@@ -55,12 +55,23 @@ int kruskalsMST(int V, vector<vector<int>> &edges) {
 
 int main() {
     
-    // An edge contains source, destination and weight
-    vector<vector<int>> edges = {
-        {0, 1, 10}, {1, 3, 15}, {2, 3, 4}, {2, 0, 6}, {0, 3, 5}
-    };
+    int V, E;
+    cout << "Enter the number of vertices: ";
+    cin >> V;
+    cout << "Enter the number of edges: ";
+    cin >> E;
     
-    cout<<kruskalsMST(4, edges);
+    vector<vector<int>> edges;
+    cout << "Enter edges in format (source destination weight):\n";
+    
+    for (int i = 0; i < E; i++) {
+        int u, v, w;
+        cin >> u >> v >> w;
+        edges.push_back({u, v, w});
+    }
+    
+    int mstCost = kruskalsMST(V, edges);
+    cout << "Minimum Spanning Tree cost: " << mstCost << endl;
     
     return 0;
 }
