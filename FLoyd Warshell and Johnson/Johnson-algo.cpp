@@ -1,51 +1,55 @@
-#include <bits/stdc++.h>
+#include <iostream>
+#include <vector>
+#include <queue>
 using namespace std;
 
-#define INF 1e9
+const int INF = 1000000000;
 
-// Bellman-Ford algorithm to find shortest paths from source
-bool bellmanFord(int V, vector<vector<int>>& edges, vector<int>& dist, int src) {
-    dist.assign(V, INF);
-    dist[src] = 0;
+bool bellmanFord(int n, vector<vector<int>>& edges, vector<int>& h, int src) {
+    h.assign(n, INF);
+    h[src] = 0;
     
-    // Relax all edges V-1 times
-    for (int i = 0; i < V - 1; i++) {
-        for (auto& edge : edges) {
-            int u = edge[0], v = edge[1], w = edge[2];
-            if (dist[u] != INF && dist[u] + w < dist[v]) {
-                dist[v] = dist[u] + w;
+    for (int i = 0; i < n - 1; i++) {
+        for (int j = 0; j < edges.size(); j++) {
+            int u = edges[j][0];
+            int v = edges[j][1];
+            int w = edges[j][2];
+            
+            if (h[u] != INF && h[u] + w < h[v]) {
+                h[v] = h[u] + w;
             }
         }
     }
     
-    // Check for negative weight cycles
-    for (auto& edge : edges) {
-        int u = edge[0], v = edge[1], w = edge[2];
-        if (dist[u] != INF && dist[u] + w < dist[v]) {
-            return false; // Negative cycle detected
+    for (int j = 0; j < edges.size(); j++) {
+        int u = edges[j][0];
+        int v = edges[j][1];
+        int w = edges[j][2];
+        
+        if (h[u] != INF && h[u] + w < h[v]) {
+            return false; 
         }
     }
-    return true;
+    return true; 
 }
 
-// Dijkstra's algorithm to find shortest paths from source
-void dijkstra(int V, vector<pair<int, int>> adj[], vector<int>& dist, int src) {
+void dijkstra(int n, vector<pair<int, int>> adj[], vector<int>& dist, int src) {
     priority_queue<pair<int, int>, vector<pair<int, int>>, greater<pair<int, int>>> pq;
     
-    dist.assign(V, INF);
+    dist.assign(n, INF);
     dist[src] = 0;
     pq.push({0, src});
     
     while (!pq.empty()) {
-        int u = pq.top().second;
         int d = pq.top().first;
+        int u = pq.top().second;
         pq.pop();
         
         if (d > dist[u]) continue;
         
-        for (auto& edge : adj[u]) {
-            int v = edge.first;
-            int w = edge.second;
+        for (int i = 0; i < adj[u].size(); i++) {
+            int v = adj[u][i].first;
+            int w = adj[u][i].second;
             
             if (dist[u] + w < dist[v]) {
                 dist[v] = dist[u] + w;
@@ -55,51 +59,48 @@ void dijkstra(int V, vector<pair<int, int>> adj[], vector<int>& dist, int src) {
     }
 }
 
-// Johnson's Algorithm
-void johnsonAlgorithm(int V, vector<vector<int>>& edges) {
+void johnsonAlgo(int n, vector<vector<int>>& edges) {
     
-    // Step 1: Add a new vertex (V) and connect it to all vertices with weight 0
-    vector<vector<int>> modifiedEdges = edges;
-    for (int i = 0; i < V; i++) {
-        modifiedEdges.push_back({V, i, 0});
+   
+    vector<vector<int>> newEdges = edges;
+    for (int i = 0; i < n; i++) {
+        newEdges.push_back({n, i, 0});
     }
     
-    // Step 2: Run Bellman-Ford from the new vertex
-    vector<int> h;
-    if (!bellmanFord(V + 1, modifiedEdges, h, V)) {
-        cout << "Graph contains negative weight cycle" << endl;
+    vector<int> h; 
+    if (!bellmanFord(n + 1, newEdges, h, n)) {
+        cout << "Graph contains negative weight cycle!\n";
         return;
     }
     
-    // Step 3: Reweight the edges
-    vector<pair<int, int>> adj[V];
-    for (auto& edge : edges) {
-        int u = edge[0], v = edge[1], w = edge[2];
-        int newWeight = w + h[u] - h[v];
-        adj[u].push_back({v, newWeight});
+    vector<pair<int, int>> adj[n];
+    for (int i = 0; i < edges.size(); i++) {
+        int u = edges[i][0];
+        int v = edges[i][1];
+        int w = edges[i][2];
+        
+        int newW = w + h[u] - h[v];
+        adj[u].push_back({v, newW});
     }
     
-    // Step 4: Run Dijkstra from each vertex
-    vector<vector<int>> dist(V, vector<int>(V));
+    vector<vector<int>> dist(n, vector<int>(n));
     
-    for (int u = 0; u < V; u++) {
+    for (int src = 0; src < n; src++) {
         vector<int> d;
-        dijkstra(V, adj, d, u);
+        dijkstra(n, adj, d, src);
         
-        // Restore original weights
-        for (int v = 0; v < V; v++) {
-            if (d[v] == INF) {
-                dist[u][v] = INF;
+        for (int dst = 0; dst < n; dst++) {
+            if (d[dst] == INF) {
+                dist[src][dst] = INF;
             } else {
-                dist[u][v] = d[v] - h[u] + h[v];
+                dist[src][dst] = d[dst] - h[src] + h[dst];
             }
         }
     }
     
-    // Print the result
-    cout << "All-pairs shortest paths:\n";
-    for (int i = 0; i < V; i++) {
-        for (int j = 0; j < V; j++) {
+    for (int i = 0; i < n; i++) {
+        cout << "From vertex " << i << ": ";
+        for (int j = 0; j < n; j++) {
             if (dist[i][j] == INF) {
                 cout << "INF ";
             } else {
@@ -112,18 +113,17 @@ void johnsonAlgorithm(int V, vector<vector<int>>& edges) {
 
 int main() {
     
-    int V = 4;
-    
-    // Edges: {source, destination, weight}
+    int n = 4;
+
     vector<vector<int>> edges = {
-        {0, 1, -5},
-        {0, 2, 2},
-        {0, 3, 3},
-        {1, 2, 4},
-        {2, 3, 1}
+        {0, 1, -5},  
+        {0, 2, 2},   
+        {0, 3, 3},   
+        {1, 2, 4},   
+        {2, 3, 1}    
     };
     
-    johnsonAlgorithm(V, edges);
+    johnsonAlgo(n, edges);
     
     return 0;
 }

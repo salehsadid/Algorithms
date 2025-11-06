@@ -10,7 +10,7 @@ void floyd(vector<vector<int>> &dist)
         for(int i=0; i<v; i++)
         {
             for(int j=0; j<v; j++)
-            {   //333if(dist[i][k]!=INF && dist[k][j]!=INF )
+            {   
                 dist[i][j]=min(dist[i][j],dist[i][k]+dist[k][j]);
             }
         }
@@ -34,7 +34,6 @@ int main()
             cout<<dist[i][j]<<" ";
         }
         cout<<endl;
-
 
 }
 }
