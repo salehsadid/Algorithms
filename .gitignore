@@ -1,2 +1,6 @@
 /Assignment 01
 /Lab 02 Report.docx
+
+# Compiled files
+*.exe
+*.o
