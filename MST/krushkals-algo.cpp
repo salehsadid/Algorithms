@@ -1,7 +1,5 @@
 #include <bits/stdc++.h>
 using namespace std;
-
-// Disjoint set data struture
 class DSU {
     vector<int> parent, rank;
 
@@ -33,17 +31,13 @@ bool comparator(vector<int> &a,vector<int> &b){
 }
 int kruskalsMST(int V, vector<vector<int>> &edges) {
     
-    // Sort all edges
     sort(edges.begin(), edges.end(),comparator);
     
-    // Traverse edges in sorted order
     DSU dsu(V);
     int cost = 0, count = 0;
     
     for (auto &e : edges) {
         int x = e[0], y = e[1], w = e[2];
-        
-        // Make sure that there is no cycle
         if (dsu.find(x) != dsu.find(y)) {
             dsu.unite(x, y);
             cost += w;
@@ -54,15 +48,9 @@ int kruskalsMST(int V, vector<vector<int>> &edges) {
 }
 
 int main() {
-    
     int V, E;
-    cout << "Enter the number of vertices: ";
-    cin >> V;
-    cout << "Enter the number of edges: ";
-    cin >> E;
-    
+    cin >> V >> E;
     vector<vector<int>> edges;
-    cout << "Enter edges in format (source destination weight):\n";
     
     for (int i = 0; i < E; i++) {
         int u, v, w;
@@ -71,7 +59,7 @@ int main() {
     }
     
     int mstCost = kruskalsMST(V, edges);
-    cout << "Minimum Spanning Tree cost: " << mstCost << endl;
+    cout << "Cost: " << mstCost << endl;
     
     return 0;
 }
