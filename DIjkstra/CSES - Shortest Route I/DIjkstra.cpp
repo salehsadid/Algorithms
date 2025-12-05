@@ -3,13 +3,11 @@ using namespace std ;
 #define ll long long
 const ll INF = 1e18;
 
-
 int main()
 {
     ios::sync_with_stdio(false);
     cin.tie(nullptr);
 
-    //input er part eita --------
     ll n, m;
     cin>>n>>m; // na mene nodes , m mane vertex
 
