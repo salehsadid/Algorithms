@@ -3,30 +3,20 @@
 using namespace std;
 
 int knapsack(int capacity, vector<int>& weights, vector<int>& values, int n) {
-    // Create DP table
     vector<vector<int>> dp(n + 1, vector<int>(capacity + 1, 0));
-    
-    // Fill DP table
     for (int i = 1; i <= n; i++) {
         for (int w = 1; w <= capacity; w++) {
             if (weights[i - 1] <= w) {
-                // Take or not take the item
                 dp[i][w] = max(values[i - 1] + dp[i - 1][w - weights[i - 1]], dp[i - 1][w]);
             } else {
-                // Cannot take the item
                 dp[i][w] = dp[i - 1][w];
             }
         }
     }
-    
     return dp[n][capacity];
 }
-
 vector<int> getSelectedItems(int capacity, vector<int>& weights, vector<int>& values, int n) {
-    // Create DP table
     vector<vector<int>> dp(n + 1, vector<int>(capacity + 1, 0));
-    
-    // Fill DP table
     for (int i = 1; i <= n; i++) {
         for (int w = 1; w <= capacity; w++) {
             if (weights[i - 1] <= w) {
@@ -36,8 +26,6 @@ vector<int> getSelectedItems(int capacity, vector<int>& weights, vector<int>& va
             }
         }
     }
-    
-    // Backtrack to find selected items
     vector<int> selected;
     int w = capacity;
     
@@ -47,7 +35,6 @@ vector<int> getSelectedItems(int capacity, vector<int>& weights, vector<int>& va
             w -= weights[i - 1];
         }
     }
-    
     return selected;
 }
 

@@ -8,35 +8,26 @@ using namespace std;
 struct Item {
     int value;
     int weight;
-    
     Item(int v, int w) : value(v), weight(w) {}
 };
-
 bool compare(Item a, Item b) {
     double r1 = (double)a.value / a.weight;
     double r2 = (double)b.value / b.weight;
     return r1 > r2;
 }
-
 double fractionalKnapsack(int capacity, vector<Item>& items) {
-    // Sort items by value/weight ratio in descending order
     sort(items.begin(), items.end(), compare);
-    
     double totalValue = 0.0;
-    
     for (int i = 0; i < items.size(); i++) {
         if (capacity >= items[i].weight) {
-            // Take the whole item
             capacity -= items[i].weight;
             totalValue += items[i].value;
         } else {
-            // Take fraction of the item
             double fraction = (double)capacity / items[i].weight;
             totalValue += items[i].value * fraction;
             break;
         }
     }
-    
     return totalValue;
 }
 
